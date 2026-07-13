@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acquiro — Scriptgenerator</title>
+<title>Acquiro - Scriptgenerator</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f9f9f7; color: #1a1a1a; padding: 2rem 1rem; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f9f9f7; color: #1a1a1a; padding: 2rem 1rem; }
 .wrap { max-width: 640px; margin: 0 auto; }
 .logo { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 2rem; }
 h1 { font-size: 24px; font-weight: 500; margin-bottom: 0.5rem; }
@@ -39,7 +39,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a1a
 <div class="wrap">
   <div class="logo">Acquiro</div>
   <h1>Jouw koudbelscript, op maat</h1>
-  <p class="intro">Koude acquisitie werkt. Mits je een goed script hebt. Beantwoord de vragen en ik maak er één voor je — inclusief uitleg waarom elke stap zo is opgebouwd.</p>
+  <p class="intro">Koude acquisitie werkt. Mits je een goed script hebt. Beantwoord de vragen en ik maak er een voor je, inclusief uitleg waarom elke stap zo is opgebouwd.</p>
 
   <div class="api-field">
     <span class="lbl">Jouw Anthropic API-sleutel</span>
@@ -49,7 +49,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a1a
 
   <div class="field"><span class="lbl">1. Wat verkoop je?</span><input type="text" id="product" placeholder="bijv. acquisitietraining voor salesmensen" /></div>
   <div class="row">
-    <div class="field"><span class="lbl">2. Wie bel je — functie?</span><input type="text" id="functie" placeholder="bijv. commercieel directeur" /></div>
+    <div class="field"><span class="lbl">2. Wie bel je - functie?</span><input type="text" id="functie" placeholder="bijv. commercieel directeur" /></div>
     <div class="field"><span class="lbl">Branche?</span><input type="text" id="branche" placeholder="bijv. IT-sector" /></div>
   </div>
   <div class="field"><span class="lbl">3. Naam van de beller en bedrijf?</span><input type="text" id="beller" placeholder="bijv. Geert den Bos van Interwel" /></div>
@@ -62,20 +62,20 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a1a
       <option value="een proefperiode starten">Een proefperiode starten</option>
     </select>
   </div>
-  <div class="field"><span class="lbl">5. Welke bezwaren krijg je het vaakst?</span><textarea id="bezwaren" placeholder="bijv. 'We hebben al iets', 'Geen tijd', 'Stuur maar info op'"></textarea></div>
+  <div class="field"><span class="lbl">5. Welke bezwaren krijg je het vaakst?</span><textarea id="bezwaren" placeholder="bijv. We hebben al iets, Geen tijd, Stuur maar info op"></textarea></div>
   <div class="field"><span class="lbl">6. Wat maakt jou onderscheidend?</span><textarea id="onderscheid" placeholder="bijv. Enige specialist in koude acquisitie met eigen boek en 30 jaar ervaring"></textarea></div>
   <div class="field"><span class="lbl">7. Formeel of informeel?</span>
     <select id="stijl">
       <option value="">Kies een stijl</option>
-      <option value="informeel (jij/jou)">Informeel — jij/jou</option>
-      <option value="formeel (u)">Formeel — u</option>
+      <option value="informeel">Informeel - jij/jou</option>
+      <option value="formeel">Formeel - u</option>
     </select>
   </div>
-  <div class="field"><span class="lbl">8. Pijn van de prospect + jouw oplossing?</span><textarea id="pijn" placeholder="bijv. Salesmensen bellen niet koud. Wij trainen ze zodat ze de telefoon wél pakken."></textarea><span class="hint">Dit is de kern van je gesprek. Hoe scherper, hoe beter het script.</span></div>
+  <div class="field"><span class="lbl">8. Pijn van de prospect + jouw oplossing?</span><textarea id="pijn" placeholder="bijv. Salesmensen bellen niet koud. Wij trainen ze zodat ze de telefoon wel pakken."></textarea><span class="hint">Dit is de kern van je gesprek. Hoe scherper, hoe beter het script.</span></div>
 
   <button class="btn" id="btn" onclick="genereer()">Maak mijn script</button>
   <div id="err" class="error" style="display:none"></div>
-  <div id="load" class="loading" style="display:none">Script wordt gemaakt… even geduld.</div>
+  <div id="load" class="loading" style="display:none">Script wordt gemaakt, even geduld.</div>
 
   <div class="result" id="result" style="display:none">
     <h2>Jouw script</h2>
@@ -84,72 +84,130 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a1a
 </div>
 
 <script>
+var SYSTEM = [
+  "Je bent Victor Bonke, acquisitie-expert en auteur van Koud bellen brrr. Je schrijft koudbelscripts in acht vaste stappen. Houd elke stap KORT en SPREEKBAAR, maximaal 2-3 zinnen per stap.",
+  "",
+  "STAP 1 - BEGROETING:",
+  "Exact format bij formeel: Dag meneer/mevrouw [achternaam prospect], u spreekt met [voornaam achternaam beller] van [bedrijfsnaam], goedemiddag.",
+  "Exact format bij informeel: Dag [voornaam prospect], je spreekt met [naam beller] van [bedrijf], goedemiddag.",
+  "Dan stoppen en wachten. Nooit meer dan deze ene zin.",
+  "",
+  "STAP 2 - OPENINGSZIN:",
+  "Strikte regels:",
+  "- NOOIT je product, dienst of oplossing noemen",
+  "- NOOIT de pijn direct benoemen",
+  "- Omschrijf een onderwerp uit HUN wereld, cryptisch en triggend",
+  "- De prospect moet denken: waarom belt hij mij hierover, niet: aha hij verkoopt X",
+  "- Maximaal 2 zinnen",
+  "- Eindigt altijd met een open vraag over hun betrokkenheid",
+  "- De afsluitende vraag is ALTIJD: In hoeverre ben ik dan bij u/jou aan het juiste adres? NOOIT andersom.",
+  "",
+  "Goede voorbeelden:",
+  "- Ik ben eigenlijk op zoek naar degene die verantwoordelijk is voor de kwaliteit van het productiepersoneel binnen [bedrijfsnaam]. In hoeverre ben ik dan bij jou aan het juiste adres?",
+  "- Een tijdje geleden las ik een artikel over de gevolgen van de arbeidsmarktkrapte in de logistiek. Wat is jouw relatie daartoe binnen [bedrijfsnaam] als ik vragen mag?",
+  "- Als het gaat over de personele beschikbaarheid voor jullie productie, in hoeverre ben ik dan bij jou aan het juiste adres?",
+  "- In de markt horen we veel over de krapte aan personeel in de recyclingbranche. Wat is jouw rol daarbij als [functie], als ik vragen mag?",
+  "",
+  "STAP 3 - START ELEVATOR-PITCH PLUS BEL IK GELEGEN:",
+  "Begin met: De reden van mijn telefoontje is dat wij merken dat veel [bedrijven] in [branche] - KAP DE ZIN HALVERWEGE AF - dan direct: maar bel ik u/je trouwens even gelegen? Wacht op antwoord. Nog niets over de pijn zeggen.",
+  "",
+  "STAP 4 - PIJN:",
+  "Na ja het gelegen: hervat en beschrijf de pijn via de band. Maximaal 2 zinnen. Eindigt ALTIJD met open toetsvraag: In hoeverre herken jij/u dat ook binnen [bedrijfsnaam]?",
+  "",
+  "STAP 5 - PIJNSTILLER:",
+  "Kort wat de beller doet als oplossing. Maximaal 2 zinnen. Eindigt ALTIJD met: Wat vind je/u daarvan als je/u dat zo hoort? Wacht op reactie.",
+  "",
+  "STAP 6 - USP:",
+  "Wat maakt de beller uniek. Maximaal 2 zinnen. GEEN afspraakvraag hier.",
+  "",
+  "STAP 7 - AFSPRAAK VERKOPEN:",
+  "Twee fasen. Fase 1, zacht beginnen: Ik zou daar graag eens met u/jou over verder praten. Wanneer zou dat voor u/jou schikken? Dan wachten op reactie.",
+  "Fase 2, pas sturen als reactie vaag is: Kijkend naar de komende twee weken, misschien op donderdag [datum]?",
+  "Geef beide fasen in het script.",
+  "",
+  "STAP 8 - AFSLUITING:",
+  "Bevestig dag en tijd. Vraag mailadres. Sluit kort af. Maximaal 2 zinnen.",
+  "",
+  "Output als JSON zonder backticks: {\"steps\":[{\"label\":\"Stap 1\",\"title\":\"Begroeting\",\"script\":\"exacte spreektekst\",\"why\":\"uitleg max 1 zin\"}]}"
+].join("\n");
+
 function genereer() {
-  var apikey = document.getElementById('apikey').value.trim();
-  var product = document.getElementById('product').value.trim();
-  var functie = document.getElementById('functie').value.trim();
-  var branche = document.getElementById('branche').value.trim();
-  var beller = document.getElementById('beller').value.trim();
-  var doel = document.getElementById('doel').value;
-  var bezwaren = document.getElementById('bezwaren').value.trim();
-  var onderscheid = document.getElementById('onderscheid').value.trim();
-  var stijl = document.getElementById('stijl').value;
-  var pijn = document.getElementById('pijn').value.trim();
-  var err = document.getElementById('err');
-  err.style.display = 'none';
+  var apikey = document.getElementById("apikey").value.trim();
+  var product = document.getElementById("product").value.trim();
+  var functie = document.getElementById("functie").value.trim();
+  var branche = document.getElementById("branche").value.trim();
+  var beller = document.getElementById("beller").value.trim();
+  var doel = document.getElementById("doel").value;
+  var bezwaren = document.getElementById("bezwaren").value.trim();
+  var onderscheid = document.getElementById("onderscheid").value.trim();
+  var stijl = document.getElementById("stijl").value;
+  var pijn = document.getElementById("pijn").value.trim();
+  var err = document.getElementById("err");
+  err.style.display = "none";
 
-  if (!apikey) { err.textContent = 'Vul je API-sleutel in.'; err.style.display = 'block'; return; }
-  if (!product || !functie || !branche || !beller || !doel || !bezwaren || !onderscheid || !stijl || !pijn) { err.textContent = 'Vul alle vragen in.'; err.style.display = 'block'; return; }
+  if (!apikey) { err.textContent = "Vul je API-sleutel in."; err.style.display = "block"; return; }
+  if (!product || !functie || !branche || !beller || !doel || !bezwaren || !onderscheid || !stijl || !pijn) {
+    err.textContent = "Vul alle vragen in."; err.style.display = "block"; return;
+  }
 
-  var btn = document.getElementById('btn');
+  var btn = document.getElementById("btn");
   btn.disabled = true;
-  document.getElementById('load').style.display = 'block';
-  document.getElementById('result').style.display = 'none';
+  document.getElementById("load").style.display = "block";
+  document.getElementById("result").style.display = "none";
 
-  var systemPrompt = "Je bent Victor Bonke, acquisitie-expert en auteur van 'Koud bellen: brrr...'. Je schrijft koudbelscripts in acht vaste stappen. Houd elke stap KORT en SPREEKBAAR — maximaal 2-3 zinnen per stap.\n\nDE ACHT STAPPEN:\n\nSTAP 1 - BEGROETING:\nExact format: 'Dag [meneer/mevrouw] [achternaam prospect], u spreekt met [voornaam achternaam beller] van [bedrijfsnaam], goedemiddag.' Dan stoppen. Nooit meer dan deze ene zin. Bij informeel: 'Dag [voornaam prospect], je spreekt met [naam beller] van [bedrijf], goedemiddag.'\n\nSTAP 2 - OPENINGSZIN:\nDIT IS DE MOEILIJKSTE STAP. Strikte regels:\n- NOOIT je product, dienst of oplossing noemen\n- NOOIT de pijn direct benoemen\n- Omschrijf een onderwerp uit HUN wereld — cryptisch, vaag maar triggend\n- De prospect moet denken 'waarom belt hij mij hierover?' — niet 'aha, hij verkoopt X'\n- Kort: max 2 zinnen\n- Eindigt altijd met een open vraag over hun betrokkenheid\n\nGoede voorbeelden van openingszinnen:\n- 'Ik ben eigenlijk op zoek naar degene die verantwoordelijk is voor de kwaliteit van het productiepersoneel binnen [bedrijfsnaam]... In hoeverre ben ik dan bij jou aan het juiste adres?'
+  var userPrompt = "Maak een script met deze gegevens:\n" +
+    "Product/dienst: " + product + "\n" +
+    "Functie prospect: " + functie + "\n" +
+    "Branche: " + branche + "\n" +
+    "Beller: " + beller + "\n" +
+    "Doel gesprek: " + doel + "\n" +
+    "Vaakste bezwaren: " + bezwaren + "\n" +
+    "Onderscheidend vermogen: " + onderscheid + "\n" +
+    "Stijl: " + stijl + "\n" +
+    "Pijn van prospect plus oplossing: " + pijn + "\n\n" +
+    "Belangrijk: de openingszin mag NIET over het product of de pijn gaan. Omschrijf iets uit hun wereld, cryptisch en triggend. Volg alle acht stappen exact en houd het kort.";
 
-LET OP: de afsluitende vraag is ALTIJD 'In hoeverre ben ik dan bij u/jou aan het juiste adres?' — NOOIT 'in hoeverre bent u bij mij aan het juiste adres?'. De beller zoekt de prospect, niet andersom.\n- 'Een tijdje geleden las ik een artikel over de gevolgen van de arbeidsmarktkrapte in de logistiek... Wat is jouw relatie daartoe binnen [bedrijfsnaam] als ik vragen mag?'\n- 'Als het gaat over de personele beschikbaarheid voor jullie productie... in hoeverre ben ik dan bij jou aan het juiste adres?'\n- 'In de markt horen we veel over de krapte aan personeel in de recyclingbranche... Wat is jouw rol daarbij als [functie], als ik vragen mag?'\n- 'Laatst vernam ik dat [bedrijfsnaam] bezig is met [cryptisch omschreven ontwikkeling]... In welke mate ben jij daar vanuit je functie bij betrokken?'\n\nFOUTEN die je NOOIT maakt:\n- Product of dienst noemen in de openingszin\n- De pijn al beschrijven\n- Over jezelf of je bedrijf beginnen\n- Een gesloten ja/nee vraag aan het einde\n- Meer dan 2 zinnen\n\nSTAP 3 - START ELEVATOR-PITCH + BEL IK GELEGEN:\nBegin met: 'De reden van mijn telefoontje is dat wij merken dat veel [functie/bedrijven] in [branche]' — KAP DE ZIN HALVERWEGE AF — dan direct: 'maar bel ik [u/je] trouwens even gelegen?' Wacht op antwoord. Nog NIETS over de pijn zeggen.\n\nSTAP 4 - PIJN:\nNa 'ja het gelegen': hervat en beschrijf de pijn via de band ('wat wij merken is dat...'). Max 2 zinnen. Eindigt ALTIJD met open toetsvraag: 'In hoeverre herken [jij/u] dat ook binnen [bedrijfsnaam]?'\n\nSTAP 5 - PIJNSTILLER:\nKort wat de beller doet als oplossing. Max 2 zinnen. Eindigt ALTIJD met: 'Wat vind [je/u] daarvan als [je/u] dat zo hoort?' Wacht op reactie.\n\nSTAP 6 - USP:\nWat maakt de beller uniek ten opzichte van concurrenten. Max 2 zinnen. GEEN afspraakvraag hier.\n\nSTAP 7 - AFSPRAAK VERKOPEN:\nDirect de afspraakvraag — niet OF maar WANNEER. Max 1 zin.\n\nSTAP 8 - AFSLUITING:\nBevestig dag en tijd. Vraag mailadres. Sluit kort af. Max 2 zinnen.\n\nOutput als JSON zonder backticks: {\"steps\":[{\"label\":\"Stap 1\",\"title\":\"Begroeting\",\"script\":\"exacte spreektekst\",\"why\":\"uitleg max 1 zin\"}]}";
-
-  var userPrompt = "Maak een script met deze gegevens:\nProduct/dienst: " + product + "\nFunctie prospect: " + functie + "\nBranche: " + branche + "\nBeller: " + beller + "\nDoel gesprek: " + doel + "\nVaakste bezwaren: " + bezwaren + "\nOnderscheidend vermogen: " + onderscheid + "\nStijl: " + stijl + "\nPijn van prospect + oplossing: " + pijn + "\n\nBelangrijk: de openingszin mag NIET over het product of de pijn gaan. Omschrijf iets uit hun wereld — cryptisch en triggend. Volg alle acht stappen exact en houd het kort.";
-
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
+  fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apikey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
+      "Content-Type": "application/json",
+      "x-api-key": apikey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model: "claude-sonnet-4-6",
       max_tokens: 2500,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }]
+      system: SYSTEM,
+      messages: [{ role: "user", content: userPrompt }]
     })
   })
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data.error) { throw new Error(data.error.message); }
-    var text = data.content ? data.content.map(function(b) { return b.text || ''; }).join('') : '';
-    var clean = text.replace(/```json|```/g, '').trim();
+    var text = data.content ? data.content.map(function(b) { return b.text || ""; }).join("") : "";
+    var clean = text.replace(/```json|```/g, "").trim();
     var parsed = JSON.parse(clean);
-    var container = document.getElementById('steps');
-    container.innerHTML = '';
+    var container = document.getElementById("steps");
+    container.innerHTML = "";
     parsed.steps.forEach(function(s, i) {
-      var d = document.createElement('div');
-      d.className = 'step';
-      d.innerHTML = '<div class="step-label">' + (s.label || 'Stap ' + (i+1)) + '</div><div class="step-title">' + s.title + '</div><div class="step-text">' + s.script + '</div><div class="step-why"><strong>Waarom zo:</strong> ' + s.why + '</div>';
+      var d = document.createElement("div");
+      d.className = "step";
+      d.innerHTML = "<div class='step-label'>" + (s.label || "Stap " + (i+1)) + "</div>" +
+        "<div class='step-title'>" + s.title + "</div>" +
+        "<div class='step-text'>" + s.script + "</div>" +
+        "<div class='step-why'><strong>Waarom zo:</strong> " + s.why + "</div>";
       container.appendChild(d);
     });
-    document.getElementById('result').style.display = 'block';
+    document.getElementById("result").style.display = "block";
   })
   .catch(function(e) {
-    err.textContent = 'Er ging iets mis: ' + e.message;
-    err.style.display = 'block';
+    err.textContent = "Er ging iets mis: " + e.message;
+    err.style.display = "block";
   })
   .finally(function() {
     btn.disabled = false;
-    document.getElementById('load').style.display = 'none';
+    document.getElementById("load").style.display = "none";
   });
 }
 </script>
