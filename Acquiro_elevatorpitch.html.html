@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acquiro - Elevator-pitch builder</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f9f9f7; color: #1a1a1a; padding: 2rem 1rem; }
+.wrap { max-width: 640px; margin: 0 auto; }
+.logo { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 2rem; }
+h1 { font-size: 24px; font-weight: 500; margin-bottom: 0.5rem; }
+.intro { font-size: 15px; color: #555; margin-bottom: 2rem; line-height: 1.6; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.25rem; }
+.lbl { font-size: 13px; font-weight: 500; display: block; margin-bottom: 4px; }
+.hint { font-size: 12px; color: #888; line-height: 1.5; }
+input, textarea, select { font-size: 14px; padding: 9px 11px; border-radius: 8px; border: 1px solid #ddd; background: #fff; color: #1a1a1a; width: 100%; font-family: inherit; }
+textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a1a; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.divider { border: none; border-top: 1px solid #e5e5e5; margin: 1.5rem 0; }
+.btn { margin-top: 0.5rem; padding: 11px 22px; font-size: 14px; font-weight: 500; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s; }
+.btn:hover { opacity: 0.8; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.error { color: #c0392b; font-size: 13px; margin-top: 0.5rem; }
+.loading { color: #888; font-size: 14px; margin-top: 1rem; }
+.result { margin-top: 2rem; border-top: 1px solid #e5e5e5; padding-top: 1.5rem; }
+.result h2 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; }
+.pitch-card { background: #f3f3f0; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+.pitch-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.pitch-text { font-size: 14px; line-height: 1.7; }
+.fb-card { border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.fb-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.fb-text { font-size: 14px; line-height: 1.6; }
+.fb-tip { font-size: 13px; color: #888; margin-top: 6px; font-style: italic; line-height: 1.5; }
+.goed { background: #d4edda; border-left: 3px solid #28a745; }
+.goed .fb-label { color: #155724; }
+.warn { background: #fff3cd; border-left: 3px solid #ffc107; }
+.warn .fb-label { color: #856404; }
+.bad { background: #f8d7da; border-left: 3px solid #dc3545; }
+.bad .fb-label { color: #721c24; }
+.api-field { background: #fff3cd; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+.api-field .lbl { color: #856404; }
+.api-field input { border-color: #ffc107; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Acquiro</div>
+  <h1>Jouw elevator-pitch in drie stappen</h1>
+  <p class="intro">Pijn, pijnstiller en USP zijn drie verschillende dingen. De meeste mensen verwarren ze. Vul ze apart in - de tool geeft feedback per stap en bouwt er een vloeiende pitch van.</p>
+
+  <div class="api-field">
+    <span class="lbl">Jouw Anthropic API-sleutel</span>
+    <input type="password" id="apikey" placeholder="sk-ant-api03-..." />
+    <span class="hint" style="color:#856404">Wordt alleen lokaal gebruikt, niet opgeslagen.</span>
+  </div>
+
+  <div class="row">
+    <div class="field"><span class="lbl">Wie bel je - functie?</span><input type="text" id="functie" placeholder="bijv. commercieel directeur" /></div>
+    <div class="field"><span class="lbl">Branche?</span><input type="text" id="branche" placeholder="bijv. IT-sector" /></div>
+  </div>
+  <div class="field"><span class="lbl">Formeel of informeel?</span>
+    <select id="stijl">
+      <option value="">Kies stijl</option>
+      <option value="informeel">Informeel - jij/jou</option>
+      <option value="formeel">Formeel - u</option>
+    </select>
+  </div>
+
+  <hr class="divider">
+
+  <div class="field">
+    <span class="lbl">Stap 1 - De pijn</span>
+    <textarea id="pijn" placeholder="Beschrijf de pijn of het verlangen van jouw prospect. Speel via de band."></textarea>
+    <span class="hint">De prospect moet denken: dit gaat over mij.</span>
+  </div>
+  <div class="field">
+    <span class="lbl">Stap 2 - De pijnstiller</span>
+    <textarea id="pijnstiller" placeholder="Hoe los jij de pijn op? Wat doe jij concreet?"></textarea>
+    <span class="hint">Dit is nog geen USP. Dit is de oplossing.</span>
+  </div>
+  <div class="field">
+    <span class="lbl">Stap 3 - De USP</span>
+    <textarea id="usp" placeholder="Wat maakt jou uniek ten opzichte van alle anderen die hetzelfde oplossen?"></textarea>
+    <span class="hint">Als een concurrent dit ook kan zeggen, is het geen USP.</span>
+  </div>
+
+  <button class="btn" id="btn" onclick="bouw()">Bouw mijn elevator-pitch</button>
+  <div id="err" class="error" style="display:none"></div>
+  <div id="load" class="loading" style="display:none">Pitch wordt gebouwd en beoordeeld, even geduld.</div>
+
+  <div class="result" id="result" style="display:none">
+    <h2>Jouw elevator-pitch</h2>
+    <div id="pitchblokken"></div>
+    <h2 style="margin-top:1.5rem">Feedback per stap</h2>
+    <div id="feedback"></div>
+  </div>
+</div>
+
+<script>
+var SYSTEM = [
+  "Je bent Victor Bonke, acquisitie-expert en auteur van Koud bellen brrr.",
+  "Je bouwt elevator-pitches voor koude acquisitiegesprekken in drie vaste stappen.",
+  "",
+  "STAP 1 - PIJN:",
+  "Begin met de eerste helft van de pijnzin, kap die halverwege af, dan direct: maar bel ik je/u trouwens even gelegen?",
+  "Na ja het gelegen: hervat en beschrijf de volledige pijn via de band.",
+  "Eindigt ALTIJD met open toetsvraag: In hoeverre herken jij/u dat ook binnen [bedrijfsnaam]?",
+  "",
+  "STAP 2 - PIJNSTILLER:",
+  "Kort wat de beller doet als oplossing. Maximaal 2 zinnen.",
+  "Eindigt ALTIJD met: Wat vind je/u daarvan als je/u dat zo hoort?",
+  "",
+  "STAP 3 - USP:",
+  "Wat maakt de beller uniek. Maximaal 2 zinnen.",
+  "GEEN afspraakvraag hier.",
+  "",
+  "BELANGRIJK: de feedback beoordeelt ALLEEN wat de gebruiker zelf heeft ingevuld - de kwaliteit van de pijn, pijnstiller en USP. Niet of de bel ik gelegen erin zit of de toetsvraag - die voeg jij zelf toe. Beoordeel: is de pijn herkenbaar en concreet? Is de pijnstiller duidelijk onderscheiden van de USP? Is de USP echt uniek of kan een concurrent dit ook zeggen?",
+  "pijn: de tekst van stap 1 als spreektekst",
+  "pijnstiller: de tekst van stap 2 als spreektekst",
+  "usp: de tekst van stap 3 als spreektekst",
+  "feedback: array van drie objecten met stap, score en beoordeling en tip",
+  "",
+  "Voorbeeld van de exacte JSON-structuur:",
+  "{\"pijn\": \"tekst stap 1\", \"pijnstiller\": \"tekst stap 2\", \"usp\": \"tekst stap 3\", \"feedback\": [{\"stap\": \"Pijn\", \"score\": \"goed\", \"beoordeling\": \"...\", \"tip\": \"...\"}, {\"stap\": \"Pijnstiller\", \"score\": \"goed\", \"beoordeling\": \"...\", \"tip\": \"...\"}, {\"stap\": \"USP\", \"score\": \"goed\", \"beoordeling\": \"...\", \"tip\": \"...\"}]}"
+].join("\n");
+
+function bouw() {
+  var apikey = document.getElementById("apikey").value.trim();
+  var functie = document.getElementById("functie").value.trim();
+  var branche = document.getElementById("branche").value.trim();
+  var stijl = document.getElementById("stijl").value;
+  var pijn = document.getElementById("pijn").value.trim();
+  var pijnstiller = document.getElementById("pijnstiller").value.trim();
+  var usp = document.getElementById("usp").value.trim();
+  var err = document.getElementById("err");
+  err.style.display = "none";
+
+  if (!apikey) { err.textContent = "Vul je API-sleutel in."; err.style.display = "block"; return; }
+  if (!functie || !branche || !stijl || !pijn || !pijnstiller || !usp) {
+    err.textContent = "Vul alle velden in."; err.style.display = "block"; return;
+  }
+
+  var btn = document.getElementById("btn");
+  btn.disabled = true;
+  document.getElementById("load").style.display = "block";
+  document.getElementById("result").style.display = "none";
+
+  var userPrompt = "Functie prospect: " + functie +
+    "\nBranche: " + branche +
+    "\nStijl: " + stijl +
+    "\nPijn: " + pijn +
+    "\nPijnstiller: " + pijnstiller +
+    "\nUSP: " + usp +
+    "\n\nGeef de output als JSON met exact de velden pijn, pijnstiller, usp en feedback.";
+
+  fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apikey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 2000,
+      system: SYSTEM,
+      messages: [{ role: "user", content: userPrompt }]
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.error) { throw new Error(data.error.message); }
+    var text = data.content ? data.content.map(function(b) { return b.text || ""; }).join("") : "";
+    var clean = text.replace(/```json|```/g, "").trim();
+    var p = JSON.parse(clean);
+
+    var blokken = document.getElementById("pitchblokken");
+    blokken.innerHTML =
+      "<div class='pitch-card'><div class='pitch-label'>Pijn</div><div class='pitch-text'>" + (p.pijn || "") + "</div></div>" +
+      "<div class='pitch-card'><div class='pitch-label'>Pijnstiller</div><div class='pitch-text'>" + (p.pijnstiller || "") + "</div></div>" +
+      "<div class='pitch-card'><div class='pitch-label'>USP</div><div class='pitch-text'>" + (p.usp || "") + "</div></div>";
+
+    var fb = document.getElementById("feedback");
+    fb.innerHTML = "";
+    if (p.feedback) {
+      p.feedback.forEach(function(f) {
+        var cls = f.score === "goed" ? "goed" : f.score === "waarschuwing" ? "warn" : "bad";
+        var lbl = f.score === "goed" ? "Goed" : f.score === "waarschuwing" ? "Let op" : "Probleem";
+        var d = document.createElement("div");
+        d.className = "fb-card " + cls;
+        d.innerHTML = "<div class='fb-label'>" + f.stap + " - " + lbl + "</div>" +
+          "<div class='fb-text'>" + f.beoordeling + "</div>" +
+          (f.tip ? "<div class='fb-tip'>" + f.tip + "</div>" : "");
+        fb.appendChild(d);
+      });
+    }
+
+    document.getElementById("result").style.display = "block";
+  })
+  .catch(function(e) {
+    err.textContent = "Er ging iets mis: " + e.message;
+    err.style.display = "block";
+  })
+  .finally(function() {
+    btn.disabled = false;
+    document.getElementById("load").style.display = "none";
+  });
+}
+</script>
+</body>
+</html>

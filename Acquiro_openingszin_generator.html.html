@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acquiro - Openingszin-generator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f9f9f7; color: #1a1a1a; padding: 2rem 1rem; }
+.wrap { max-width: 640px; margin: 0 auto; }
+.logo { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 2rem; }
+h1 { font-size: 24px; font-weight: 500; margin-bottom: 0.5rem; }
+.intro { font-size: 15px; color: #555; margin-bottom: 2rem; line-height: 1.6; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.25rem; }
+.lbl { font-size: 13px; font-weight: 500; display: block; margin-bottom: 4px; }
+.hint { font-size: 12px; color: #888; line-height: 1.5; }
+input, textarea, select { font-size: 14px; padding: 9px 11px; border-radius: 8px; border: 1px solid #ddd; background: #fff; color: #1a1a1a; width: 100%; font-family: inherit; }
+textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: #1a1a1a; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.btn { margin-top: 0.5rem; padding: 11px 22px; font-size: 14px; font-weight: 500; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.15s; }
+.btn:hover { opacity: 0.8; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.error { color: #c0392b; font-size: 13px; margin-top: 0.5rem; }
+.loading { color: #888; font-size: 14px; margin-top: 1rem; }
+.result { margin-top: 2rem; border-top: 1px solid #e5e5e5; padding-top: 1.5rem; }
+.result h2 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; }
+.card { background: #f3f3f0; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.nummer { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.zin { font-size: 15px; line-height: 1.6; margin-bottom: 12px; font-style: italic; }
+.procon { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pro, .con { font-size: 13px; line-height: 1.5; padding: 8px 10px; border-radius: 8px; }
+.pro { background: #d4edda; color: #155724; }
+.con { background: #f8d7da; color: #721c24; }
+.pro-label, .con-label { font-size: 11px; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.api-field { background: #fff3cd; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+.api-field .lbl { color: #856404; }
+.api-field input { border-color: #ffc107; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Acquiro</div>
+  <h1>Jouw openingszin - de eerste 10 seconden bepalen alles</h1>
+  <p class="intro">De openingszin bepaalt voor 95% of je verder mag met het gesprek. Vul de vragen in en krijg drie varianten - elk met een eerlijk oordeel over de voors en tegens.</p>
+
+  <div class="api-field">
+    <span class="lbl">Jouw Anthropic API-sleutel</span>
+    <input type="password" id="apikey" placeholder="sk-ant-api03-..." />
+    <span class="hint" style="color:#856404">Wordt alleen lokaal gebruikt, niet opgeslagen.</span>
+  </div>
+
+  <div class="row">
+    <div class="field"><span class="lbl">Wie bel je - functie?</span><input type="text" id="functie" placeholder="bijv. commercieel directeur" /></div>
+    <div class="field"><span class="lbl">Branche?</span><input type="text" id="branche" placeholder="bijv. IT-sector" /></div>
+  </div>
+
+  <div class="field">
+    <span class="lbl">Wat doet dit bedrijf concreet?</span>
+    <input type="text" id="verantwoordelijk" placeholder="bijv. ze distribueren gekoeld transport voor supermarkten" />
+    <span class="hint">Hoe specifieker, hoe scherper de openingszin.</span>
+  </div>
+
+  <div class="field">
+    <span class="lbl">Wat verkoop je?</span>
+    <input type="text" id="product" placeholder="bijv. koude acquisitietraining voor salesmensen" />
+  </div>
+
+  <div class="field">
+    <span class="lbl">Welke pijn of wens wil je verderop in het gesprek benoemen?</span>
+    <textarea id="pijn" placeholder="bijv. Salesmensen in de IT willen wel nieuwe klanten maar pakken de telefoon niet. Ze missen de skills om koud te bellen."></textarea>
+    <span class="hint">Dit gebruik je NIET in de openingszin - maar de openingszin moet er wel naartoe leiden.</span>
+  </div>
+
+  <div class="field"><span class="lbl">Formeel of informeel?</span>
+    <select id="stijl">
+      <option value="">Kies stijl</option>
+      <option value="informeel">Informeel - jij/jou</option>
+      <option value="formeel">Formeel - u</option>
+    </select>
+  </div>
+
+  <button class="btn" id="btn" onclick="genereer()">Genereer mijn openingszinnen</button>
+  <div id="err" class="error" style="display:none"></div>
+  <div id="load" class="loading" style="display:none">Openingszinnen worden gemaakt, even geduld.</div>
+
+  <div class="result" id="result" style="display:none">
+    <h2>Drie varianten</h2>
+    <div id="output"></div>
+  </div>
+</div>
+
+<script>
+var SYSTEM = [
+  "Je bent Victor Bonke, acquisitie-expert en auteur van Koud bellen brrr.",
+  "Je genereert openingszinnen voor koude acquisitiegesprekken.",
+  "",
+  "Je krijgt zes stukken informatie: functie, branche, wat het bedrijf concreet doet, product, pijn/wens en stijl.",
+  "De pijn/wens gebruik je NIET om te benoemen in de openingszin.",
+  "Je gebruikt de pijn/wens alleen als kompas om het THEMA te bepalen - niet de inhoud. De openingszin blijft breed en neutraal. Ze gaat over hun wereld, hun verantwoordelijkheid, hun markt - nooit over een probleem of uitdaging. De prospect mag NIETS afleiden over wat jij gaat vertellen.",
+  "",
+  "STRIKTE REGELS voor een goede openingszin:",
+  "- NOOIT het product, de dienst of het bedrijf van de beller noemen",
+  "- NOOIT de pijn of wens direct benoemen",
+  "- Omschrijf een onderwerp uit HUN wereld, cryptisch en triggend",
+  "- De prospect moet denken: waarom belt hij mij hierover - niet: aha hij verkoopt X",
+  "- Zo kort mogelijk. Een korte aanloop van maximaal een halve zin, dan direct de open vraag. Schrap elk woord dat er niet toe doet.",
+  "- Eindigt ALTIJD met een open vraag",
+  "- De afsluitende vraag is ALTIJD vanuit de beller naar de prospect: In hoeverre ben ik dan bij u/jou aan het juiste adres",
+  "- NOOIT andersom: in hoeverre bent u bij mij aan het juiste adres - dit is fout",
+  "- Functietitel MAG worden toegevoegd aan de afsluitende vraag",
+  "",
+  "GOEDE VOORBEELDEN:",
+  "- Ik ben eigenlijk op zoek naar degene die verantwoordelijk is voor de commerciele groei binnen [bedrijfsnaam]. In hoeverre ben ik dan bij jou aan het juiste adres als commercieel directeur?",
+  "- Een tijdje geleden las ik een artikel over de uitdagingen rondom nieuwe klantenwerving in de IT-sector. Wat is jouw relatie daartoe binnen [bedrijfsnaam] als ik vragen mag?",
+  "- Als het gaat over het realiseren van de commerciele doelstellingen van jullie organisatie, in hoeverre ben ik dan bij jou aan het juiste adres?",
+  "- In de markt horen we veel over de druk op salesteams in de IT-sector. Wat is jouw rol daarbij als commercieel directeur, als ik vragen mag?",
+  "- Als het gaat over de manier waarop jullie commercieel opereren in de markt, in hoeverre ben ik dan bij jou aan het juiste adres?",
+  "- Ik ben eigenlijk op zoek naar degene die binnen [bedrijfsnaam] verantwoordelijk is voor de manier waarop jullie nieuwe klanten aantrekken. In hoeverre ben ik dan bij jou aan het juiste adres als commercieel directeur?",
+  "",
+  "FOUTEN die je NOOIT maakt:",
+  "- Product of dienst noemen",
+  "- Pijn direct benoemen",
+  "- Over jezelf of je bedrijf beginnen",
+  "- Gesloten ja/nee vraag aan het einde",
+  "- Meer dan 2 zinnen",
+  "- Vraag andersom stellen",
+  "",
+  "Genereer drie varianten met elk een ander aangrijpingspunt:",
+  "Variant 1: gebaseerd op wat het bedrijf concreet doet. Gebruik die specifieke activiteit als cryptische omschrijving - zo kort en scherp mogelijk. Patroon: Ik ben op zoek naar degene die binnen [bedrijfsnaam] verantwoordelijk is voor [specifieke activiteit van het bedrijf]. In hoeverre ben ik dan bij jou aan het juiste adres als [functie]?",
+  "Variant 2: gebaseerd op iets wat je hebt gelezen, gehoord of gezien over het bedrijf of de branche. Vraag ALLEEN naar betrokkenheid of rol - NOOIT naar visie, mening of kijk op iets. Patroon: Ik las/hoorde/zag [neutraal feit over hun wereld]. In welke mate ben jij daar vanuit je functie bij betrokken?",
+  "Variant 3: gebaseerd op een thema dat in hun markt speelt. Noem het thema zo neutraal en feitelijk mogelijk - geen operationele lading, geen woorden die ook maar in de buurt van een probleem komen. Verboden woorden en formuleringen: draaiende houden, uitdaging, druk, krapte, problemen, moeilijkheden, zorgen, risico. Patroon: Als het gaat over [puur neutraal thema], in hoeverre ben ik dan bij jou aan het juiste adres?",
+  "",
+  "Output als JSON zonder backticks:",
+  "{\"varianten\":[{\"nummer\":\"Variant 1\",\"aanpak\":\"naam van het aangrijpingspunt\",\"zin\":\"de volledige openingszin spreekbaar\",\"voor\":\"wat sterk is max 2 zinnen\",\"tegen\":\"wat een risico is max 2 zinnen\"}]}"
+].join("\n");
+
+function genereer() {
+  var apikey = document.getElementById("apikey").value.trim();
+  var functie = document.getElementById("functie").value.trim();
+  var branche = document.getElementById("branche").value.trim();
+  var product = document.getElementById("product").value.trim();
+  var verantwoordelijk = document.getElementById("verantwoordelijk").value.trim();
+  var pijn = document.getElementById("pijn").value.trim();
+  var stijl = document.getElementById("stijl").value;
+  var err = document.getElementById("err");
+  err.style.display = "none";
+
+  if (!apikey) { err.textContent = "Vul je API-sleutel in."; err.style.display = "block"; return; }
+  if (!functie || !branche || !product || !verantwoordelijk || !pijn || !stijl) {
+    err.textContent = "Vul alle velden in.";
+    err.style.display = "block";
+    return;
+  }
+
+  var btn = document.getElementById("btn");
+  btn.disabled = true;
+  document.getElementById("load").style.display = "block";
+  document.getElementById("result").style.display = "none";
+
+  var userPrompt = "Functie: " + functie +
+    "\nBranche: " + branche +
+    "\nWat de beller verkoopt: " + product +
+    "\nWat het bedrijf concreet doet: " + verantwoordelijk +
+    "\nPijn of wens die later in het gesprek komt (NIET benoemen in de openingszin, alleen als kompas gebruiken): " + pijn +
+    "\nStijl: " + stijl +
+    "\n\nGenereer drie varianten. De openingszin mag nooit het product of de pijn benoemen - wel cryptisch in die richting wijzen. Afsluitende vraag altijd vanuit de beller naar de prospect.";
+
+  fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apikey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1200,
+      system: SYSTEM,
+      messages: [{ role: "user", content: userPrompt }]
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.error) { throw new Error(data.error.message); }
+    var text = data.content ? data.content.map(function(b) { return b.text || ""; }).join("") : "";
+    var clean = text.replace(/```json|```/g, "").trim();
+    var p = JSON.parse(clean);
+    var container = document.getElementById("output");
+    container.innerHTML = "";
+    p.varianten.forEach(function(v) {
+      var card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML =
+        "<div class='nummer'>" + v.nummer + " - " + v.aanpak + "</div>" +
+        "<div class='zin'>" + v.zin + "</div>" +
+        "<div class='procon'>" +
+        "<div class='pro'><div class='pro-label'>Sterk</div>" + v.voor + "</div>" +
+        "<div class='con'><div class='con-label'>Risico</div>" + v.tegen + "</div>" +
+        "</div>";
+      container.appendChild(card);
+    });
+    document.getElementById("result").style.display = "block";
+  })
+  .catch(function(e) {
+    err.textContent = "Er ging iets mis: " + e.message;
+    err.style.display = "block";
+  })
+  .finally(function() {
+    btn.disabled = false;
+    document.getElementById("load").style.display = "none";
+  });
+}
+</script>
+</body>
+</html>
